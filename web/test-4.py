@@ -98,6 +98,16 @@ def login_to_site(driver, username, password, login_button_class="header-login-i
         submit_button.click()
         print("🔍 로그인 버튼 클릭 중...")
 
+
+        if driver.find_elements(By.CSS_SELECTOR, ".pop-area.PLIL140P5") : 
+            print("동일한 아이디로 다른 디바이스에서 로그인 중입니다. 다른 기기에서 로그아웃해주세요.")
+            return False
+        
+        elif driver.find_elements(By.CSS_SELECTOR, ".pop-area PLIL140P4"):
+            print("접속기기가 변경되었습니다. 크롬을 열어 크레탑 본인인증 후 앱을 재사용해주세요.") 
+            return False
+        
+       
         # 로그인 성공 확인
         WebDriverWait(driver, wait_time).until(
             EC.presence_of_element_located((By.CLASS_NAME, user_confirm_class))
@@ -465,20 +475,23 @@ def run_selenium(username, password, search_key):
             else:
                 print("팝업 처리가 실패했습니다.")
 
-            if login_to_site(driver, username, password):
-                print("로그인이 성공적으로 완료되었습니다!")
+            if driver.find_elements(By.CSS_SELECTOR, ".login-after"):
+                print("로그인 중입니다.")
             else:
-                print("로그인에 실패했습니다.")
-                driver.quit()
-                exit()
+                if login_to_site(driver, username, password):
+                    print("로그인이 성공적으로 완료되었습니다!")
+                else:
+                    print("로그인에 실패했습니다.")
+                    driver.quit()
+                    os._exit(0)
 
-            # 로그인 확인 버튼 닫기 _ 팝업 처리 함수 
-            if handle_popup(driver):
-                print("팝업 처리가 완료되었습니다.")
-            else:
-                print("팝업 처리가 실패했습니다.")
+                # 로그인 확인 버튼 닫기 _ 팝업 처리 함수 
+                if handle_popup(driver):
+                    print("팝업 처리가 완료되었습니다.")
+                else:
+                    print("팝업 처리가 실패했습니다.")
 
-            time.sleep(1)
+                time.sleep(1)
            
             session = requests.Session()
 
