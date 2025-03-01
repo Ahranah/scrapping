@@ -98,6 +98,17 @@ def login_to_site(driver, username, password, login_button_class="header-login-i
         submit_button.click()
         print("🔍 로그인 버튼 클릭 중...")
 
+        # if driver.find_elements(By.CSS_SELECTOR, ".pop-area"):
+                                
+        #     element = driver.find_element(By.XPATH, "/html/body/div/div[2]/div/div[2]/div/div/div[1]/h2")
+
+        #     # 요소의 클래스 속성이 'tit'인지 확인
+        #     if "tit" in element.get_attribute("class"):
+        #         # 텍스트가 '접속제한 안내'인지 확인
+        #         if element.text.strip() == "접속제한 안내":
+        #             print("로그인 접속 오류: 크레탑에서 다시 로그인 후 앱을 다시 실행해주세요.")
+        #             return False
+        
         # 로그인 성공 확인
         WebDriverWait(driver, wait_time).until(
             EC.presence_of_element_located((By.CLASS_NAME, user_confirm_class))
@@ -132,6 +143,7 @@ def click_button_by_text(driver, button_text):
         print(f"'{button_text}' 버튼 클릭 완료")
     except Exception as e:
         print(f"'{button_text}' 버튼 클릭 실패: {e}")
+        driver.quit()
         os._exit(0)
   
 def navigate_to_financial_page(driver, search_key, wait_time=10):
@@ -186,6 +198,7 @@ def navigate_to_financial_page(driver, search_key, wait_time=10):
 
         except Exception as e:
             print(f"❌ 찾을 수 있는 항목이 없습니다. (오류: {e})")
+            driver.quit()
             os._exit(0)
             break
             
@@ -198,6 +211,7 @@ def navigate_to_financial_page(driver, search_key, wait_time=10):
         return 1
     else:
         print("재무페이지 이동 실패")
+        driver.quit()
         os._exit(0)
 
 def get_kedcd(driver): 
@@ -443,8 +457,8 @@ def run_selenium(username, password, search_key):
             options.add_experimental_option("excludeSwitches", ["enable-logging"])
             options.add_experimental_option("detach", True) # 화면 창 닫기 방지
             options.add_argument(f"user-data-dir={COPIED_USER_DATA_DIR}")  # 복사된 프로파일 경로 지정
-            options.add_argument("--profile-directory=Default")  # 특정 프로파일 중 default 사용
-            options.add_argument("--headless")  # Headless 모드 활성화
+            options.add_argument("--profile-directory= Profile1")  # 특정 프로파일 중 default 사용
+            #options.add_argument("--headless")  # Headless 모드 활성화
             options.add_argument("--disable-autofill")
             options.add_argument("--no-sandbox")
             options.add_argument("--disable-gpu")
@@ -468,20 +482,23 @@ def run_selenium(username, password, search_key):
             else:
                 print("팝업 처리가 실패했습니다.")
 
-            if login_to_site(driver, username, password):
-                print("로그인이 성공적으로 완료되었습니다!")
+            if driver.find_elements(By.CSS_SELECTOR, ".login-after"):
+                print("로그인 중입니다.")
             else:
-                print("로그인에 실패했습니다.")
-                driver.quit()
-                exit()
+                if login_to_site(driver, username, password):
+                    print("로그인이 성공적으로 완료되었습니다!")
+                else:
+                    print("로그인에 실패했습니다.")
+                    driver.quit()
+                    os._exit(0)
 
-            # 로그인 확인 버튼 닫기 _ 팝업 처리 함수 
-            if handle_popup(driver):
-                print("팝업 처리가 완료되었습니다.")
-            else:
-                print("팝업 처리가 실패했습니다.")
+                # 로그인 확인 버튼 닫기 _ 팝업 처리 함수 
+                if handle_popup(driver):
+                    print("팝업 처리가 완료되었습니다.")
+                else:
+                    print("팝업 처리가 실패했습니다.")
 
-            time.sleep(1)
+                time.sleep(1)
            
             session = requests.Session()
 
