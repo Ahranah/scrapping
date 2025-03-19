@@ -100,6 +100,26 @@
                 <td>{{ "{:,}".format(totals.machine_cost_total * 1000) }}</td>
                 <td>{{ "{:,}".format(totals.salary_adjustment * 1000) }}</td>
                 <td>{{ "{:,}".format(totals.total * 1000) }}</td>
+            </tr>        
+        </table>
+        <table class="totals-table">
+            <tr>
+                <th>연도</th>
+                {% for i in range(5) %}
+                    <th>{{ start_year + i }}</th>
+                {% endfor %}
+            </tr>
+            <tr>
+                <th>법인세비용차감전순손익</th>
+                {% for value in before_loss[1:] %}
+                    <td>{{ "{:,}".format(value * 1000) }}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <th>법인세비용</th>
+                {% for value in taxes[1:] %}
+                    <td>{{ "{:,}".format(value * 1000) }}</td>
+                {% endfor %}
             </tr>
         </table>
         <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
