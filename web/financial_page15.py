@@ -583,8 +583,8 @@ def run_selenium(username, password, search_key):
 
 
     # 로그인 함수 호출
-    #username = "PJH0846"  # 사용자 아이디
-    #password = "akdwkdgh1625@"  # 비밀번호
+    #username =   # 사용자 아이디
+    #password =   # 비밀번호
 
     if login_to_site(driver, username, password):
         
